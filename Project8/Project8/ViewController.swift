@@ -27,12 +27,11 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadLevel()
-        
+        readFile()
+//        loadLevel()
     }
     
     func loadLevel() {
-        readFile()
         scoreLabel.translatesAutoresizingMaskIntoConstraints = false
         scoreLabel.text = "Score = \(score)"
         view.addSubview(scoreLabel)
@@ -175,20 +174,35 @@ class ViewController: UIViewController {
         questions.removeAll()
         textButtons.removeAll()
         answerdWords.removeAll()
-        if let urlFile = Bundle.main.url(forResource: "level\(level)", withExtension: ".txt") {
-            if let bodyFile = try? String(contentsOf: urlFile) {
-                var lines = bodyFile.components(separatedBy: "\n")
-                lines.shuffle()
-                for (index, line) in lines.enumerated() {
-                    let partions = line.components(separatedBy: ": ")
-                    questions.append("\(index+1). "+partions[1])
-                    textButtons.append(contentsOf: partions[0].components(separatedBy: "|"))
-                    answerdWords.append(partions[0].replacingOccurrences(of: "|", with: ""))
-                    answerds.append("\(answerdWords.last!.count) characters")
+        DispatchQueue.global(qos: .userInteractive).async {
+            [unowned self] in
+            if let urlFile = Bundle.main.url(forResource: "level\(self.level)", withExtension: ".txt") {
+                if let bodyFile = try? String(contentsOf: urlFile) {
+                    var lines = bodyFile.components(separatedBy: "\n")
+                    lines.shuffle()
+                    for (index, line) in lines.enumerated() {
+                        let partions = line.components(separatedBy: ": ")
+                        self.questions.append("\(index+1). "+partions[1])
+                        self.textButtons.append(contentsOf: partions[0].components(separatedBy: "|"))
+                        self.answerdWords.append(partions[0].replacingOccurrences(of: "|", with: ""))
+                        self.answerds.append("\(self.answerdWords.last!.count) characters")
+                    }
+                }
+            } else {
+                DispatchQueue.main.async {
+                    [weak self] in
+                    let ac = UIAlertController(title: "No such file", message: "Can't open this file", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "Ok", style: .default))
+                    self?.present(ac, animated: true)
                 }
             }
+            print(self.answerds)
+            self.textButtons.shuffle()
+            DispatchQueue.main.async {
+                [weak self] in
+                self?.loadLevel()
+            }
         }
-        textButtons.shuffle()
     }
 }
 
