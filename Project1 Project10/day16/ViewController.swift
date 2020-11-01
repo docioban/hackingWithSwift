@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UITableViewController {
+class ViewController: UICollectionViewController {
 
     var pictures = [String]()
     
@@ -30,26 +30,30 @@ class ViewController: UITableViewController {
             }
             DispatchQueue.main.async {
                 [weak self] in
-                self?.tableView.reloadData()
+                self?.collectionView.reloadData()
             }
         }
     }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return pictures.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cel = tableView.dequeueReusableCell(withIdentifier: "foto", for: indexPath)
-        cel.textLabel?.text = pictures[indexPath.row]
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cel = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? FotoCollectionViewCell else {
+            fatalError("Can not dequeue as FotoCollectionViewCell")
+        }
+        cel.name.text = pictures[indexPath.item]
+        cel.image.image = UIImage(named: pictures[indexPath.item])
         return cel
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let vc = storyboard?.instantiateViewController(identifier: "foto") as? FotoViewController {
-            vc.fotoDetail = pictures[indexPath.row]
+            vc.fotoDetail = pictures[indexPath.item]
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    
 }
 

@@ -14,8 +14,9 @@ class ViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let urlString: String
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(dataCum))
+        
+        let urlString: String
         if navigationController?.tabBarItem.tag == 0 {
             urlString = "https://api.whitehouse.gov/v1/petitions.json?limit=100"
             print("First")
@@ -23,15 +24,19 @@ class ViewController: UITableViewController {
             urlString = "https://api.whitehouse.gov/v1/petitions.json?signatureCountFloor=10000&limit=100"
             print("Second")
         }
-        if let url = URL(string: urlString) {
-            if let data = try? Data(contentsOf: url) {
-                parse(data: data)
-                resultsFilter = resultsData
-                return
+        DispatchQueue.global(qos: .userInteractive).async {
+            [weak self] in
+            if let url = URL(string: urlString) {
+                if let data = try? Data(contentsOf: url) {
+                    self?.parse(data: data)
+                    return
+                }
+            }
+            DispatchQueue.main.async {
+                [weak self] in
+                self?.alertError()
             }
         }
-        
-        alertError(title: "Error", message: "Can note download data, close app, check your internet connection, and try again")
     }
     
     @objc func dataCum() {
@@ -53,7 +58,9 @@ class ViewController: UITableViewController {
         present(av, animated: true)
     }
     
-    func alertError(title: String, message: String) {
+    @objc func alertError() {
+        let title = "Error"
+        let message = "Can note download data, close app, check your internet connection, and try again"
         let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "Ok", style: .default))
         present(ac, animated: true)
@@ -64,8 +71,12 @@ class ViewController: UITableViewController {
         
         if let jsonResults = try? decoder.decode(Results.self, from: data) {
             resultsData = jsonResults.results
-            tableView.reloadData()
+            DispatchQueue.main.async {
+                [weak self] in
+                self?.tableView.reloadData()
+            }
         }
+        resultsFilter = resultsData
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
