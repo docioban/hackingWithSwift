@@ -1,0 +1,19 @@
+{
+    "countries": [
+        {
+            "nameCountry": "Moldova",
+            "nameCapital": "Chisinau",
+            "size": "200k2",
+            "population": 200000,
+            "currency": "MDL - leu Moldovenesc"
+        },
+        {
+            "nameCountry": "Romania",
+            "nameCapital": "Bucuresti",
+            "size": "90000km2",
+            "population": 5000000,
+            "currency": "RON - Leu romanesc"
+        }
+    ]
+}
+
