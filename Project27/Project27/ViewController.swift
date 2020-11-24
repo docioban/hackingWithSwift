@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     @IBAction func tapButton(_ sender: Any) {
         numbarTapped += 1
         
-        if numbarTapped > 5 {
+        if numbarTapped > 7 {
             numbarTapped = 0
         }
         
@@ -44,9 +44,84 @@ class ViewController: UIViewController {
         case 5:
             drawImageAndText()
             
+        case 6:
+            drawEmoji()
+            
+        case 7:
+            drawTwin()
+            
         default:
             break
         }
+    }
+    
+    func drawTwin() {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 512, height: 512))
+        
+        let img = renderer.image {
+            ctx in
+            
+            let heightLetter = 250
+            let heightPoint = 50
+            let sizeLetter = 10
+            
+            // T
+            ctx.cgContext.move(to: CGPoint(x: 0, y: heightPoint))
+            ctx.cgContext.addLine(to: CGPoint(x: 150, y: heightPoint))
+            ctx.cgContext.move(to: CGPoint(x: 75, y: heightPoint))
+            ctx.cgContext.addLine(to: CGPoint(x: 75, y: heightLetter + heightPoint))
+            
+            // W
+            ctx.cgContext.move(to: CGPoint(x: 185, y: heightPoint))
+            ctx.cgContext.addLine(to: CGPoint(x: 210, y: heightLetter + heightPoint - 20))
+            ctx.cgContext.addLine(to: CGPoint(x: 255, y: heightPoint + 80))
+            ctx.cgContext.addLine(to: CGPoint(x: 290, y: heightLetter + heightPoint - 20))
+            ctx.cgContext.addLine(to: CGPoint(x: 325, y: heightPoint))
+            
+            // I
+            ctx.cgContext.move(to: CGPoint(x: 365, y: heightPoint))
+            ctx.cgContext.addLine(to: CGPoint(x: 425, y: heightPoint))
+            ctx.cgContext.move(to: CGPoint(x: 395, y: heightPoint))
+            ctx.cgContext.addLine(to: CGPoint(x: 395, y: heightLetter + heightPoint))
+            ctx.cgContext.move(to: CGPoint(x: 365, y: heightLetter + heightPoint - sizeLetter/2))
+            ctx.cgContext.addLine(to: CGPoint(x: 425, y: heightLetter + heightPoint - sizeLetter/2))
+            
+            // N
+            ctx.cgContext.move(to: CGPoint(x: 445, y: heightPoint))
+            ctx.cgContext.addLine(to: CGPoint(x: 445, y: heightLetter + heightPoint - 20))
+            ctx.cgContext.addLine(to: CGPoint(x: 507, y: heightPoint + 20))
+            ctx.cgContext.addLine(to: CGPoint(x: 507, y: heightPoint + heightLetter - 20))
+            
+            ctx.cgContext.setLineWidth(CGFloat(sizeLetter))
+            ctx.cgContext.setStrokeColor(UIColor.black.cgColor)
+            ctx.cgContext.strokePath()
+        }
+        
+        imageView.image = img
+    }
+    
+    func drawEmoji() {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 512, height: 512))
+        
+        let img = renderer.image {
+            ctx in
+            
+            let paragraphStule = NSMutableParagraphStyle()
+            paragraphStule.alignment = .center
+            
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 36),
+                .paragraphStyle: paragraphStule
+            ]
+            
+           let string = "😁 😎 🥰 ⭐️"
+            let atributeString = NSAttributedString(string: string, attributes: attrs)
+            
+            atributeString.draw(with: CGRect(x: 32, y: 32, width: 448, height: 448), options: .usesLineFragmentOrigin, context: nil)
+            
+        }
+        
+        imageView.image = img
     }
     
     func drawImageAndText() {
